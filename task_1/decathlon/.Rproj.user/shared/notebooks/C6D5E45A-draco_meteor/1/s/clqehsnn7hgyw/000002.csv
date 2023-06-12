@@ -1,0 +1,6 @@
+"0","```r
+get_meteorite_count(meteors, \"1999\")
+
+```"
+"1","[1] \"In 1999, there were 137 meteorites.\"
+"

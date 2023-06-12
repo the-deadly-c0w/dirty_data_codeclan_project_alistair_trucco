@@ -1,0 +1,100 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+```{r}
+library(tidyverse)
+```
+
+
+```{r}
+decathlon <- read_csv("../data/decathlon_clean.csv")
+```
+
+
+
+
+
+longest long jump
+
+```{r}
+slice_max(decathlon, long_jump) %>% 
+  select(name, long_jump)
+```
+
+
+100 meter mean
+
+```{r}
+decathlon %>% 
+  summarise(mean(x100m), .by = competition)
+```
+
+
+
+
+
+highest points in any one competition
+
+```{r}
+slice_max(decathlon, points)
+```
+
+highest combined points
+
+q   1`
+```{r}
+olympic_g <- decathlon %>% 
+  filter(competition == "OlympicG")
+
+decastar <- decathlon %>% 
+  filter(competition == "Decastar")
+```
+
+```{r}
+inner_join(olympic_g, decastar, by = "name", suffix = c(".oly", ".dec")) %>% 
+  slice_max((points.oly + points.dec))
+
+decathlon %>% 
+  filter(name == "Sebrle") %>% 
+  select(points) %>% 
+  sum()
+```
+
+top three Decastar shot puts
+
+```{r}
+slice_max(decastar, shot_put, n = 3) %>% 
+  select(name, shot_put)
+```
+
+
+top three OlmpicG shot puts
+
+```{r}
+slice_max(olympic_g, shot_put, n = 3) %>% 
+  select(name, shot_put)
+```
+
+
+average points by 
+
+```{r}
+faster <- decathlon %>% 
+  filter(x400m < 50)
+slower <- decathlon %>% 
+  filter(x400m > 50)
+
+
+mean(faster$points)
+mean(slower$points)
+```
+
+```{r}
+decathlon %>% 
+  group_by(x400m < 50) %>% 
+  summarise(mean(points))
+```
+

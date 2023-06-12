@@ -1,0 +1,3 @@
+"0","decathlon %>% "
+"0","  group_by(x400m < 50) %>% "
+"0","  summarise(mean(points))"

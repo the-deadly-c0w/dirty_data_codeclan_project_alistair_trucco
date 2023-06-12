@@ -1,0 +1,7 @@
+"0","```r
+refactor_get_meteorite_count(meteors, \"1999\")
+
+```"
+"1","Error in refactor_get_meteorite_count(meteors, \"1999\") : 
+  Argument: 'input_year' must be of class \"numeric\"
+"

@@ -1,0 +1,9 @@
+"0","decathlon %>% 
+  filter(name == ""Sebrle"") %>% 
+  select(points) %>% 
+  sum()
+"
+"1","[1]"
+"1"," 17110"
+"1","
+"

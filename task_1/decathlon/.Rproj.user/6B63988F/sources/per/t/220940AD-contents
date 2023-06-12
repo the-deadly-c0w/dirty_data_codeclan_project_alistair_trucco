@@ -1,0 +1,122 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+```{r}
+library(tidyverse)
+library(janitor)
+library(assertr)
+```
+
+
+```{r}
+meteors <- read_csv("data/meteors_clean.csv")
+```
+
+2.
+```{r}
+meteors %>% 
+  select(name, year, mass) %>% 
+  slice_max(mass, n = 10)
+```
+
+
+3.
+
+```{r}
+meteors %>% 
+  summarise(mean(mass), .by = fall)
+```
+
+
+4. 
+
+```{r}
+meteors %>% 
+  filter(year >= 2000) %>% 
+  count(year, name = "n_meteors_discovered")
+```
+
+
+5.
+
+```{r}
+get_meteorite_count <- function(data, input_year){
+ 
+  
+  n_year <- data %>% 
+    filter(year == input_year) %>% 
+    nrow()
+  
+  if(n_year == 0){
+    print("As far as we know, there were no meteorites that year")
+  }else{
+    paste0("In ", input_year, ", there were ", n_year, " meteorites.")
+  }
+}
+```
+
+
+
+
+6.
+
+could be improved by checking that the inputs are of the correct class,
+and that the data contains the columns we are expecting.
+
+7.
+
+```{r}
+# this should return a valid output
+get_meteorite_count(meteors, 1999)
+
+
+# these are all invalid entries, the purpose of the unit tests is to see
+# how they affect the function 
+get_meteorite_count("str input", 1999)
+get_meteorite_count(FALSE, 1999)
+get_meteorite_count("meteors", 1999)
+
+
+get_meteorite_count(meteors, TRUE)
+get_meteorite_count(meteors, "1999")
+#strange that this accepts a string as a number, not obviously harmful but not worth keeping
+```
+
+```{r}
+refactor_get_meteorite_count <- function(data, input_year){
+  
+  #class conditions for inputs
+  
+  if("data.frame" %in%  class(data)){
+    
+  }else{
+    
+    stop("Argument: 'data' must be of class: \"data.frame\"")
+  }
+  
+    if(is.numeric(input_year)){
+    
+  }else{
+    
+    stop("Argument: 'input_year' must be of class: \"numeric\"")
+  }
+  
+  n_year <- data %>% 
+    filter(year == input_year) %>% 
+    nrow()
+  
+  if(n_year == 0){
+    print("As far as we know, there were no meteorites that year")
+  }else{
+    paste0("In ", input_year, ", there were ", n_year, " meteorites.")
+  }
+}
+```
+
+```{r}
+refactor_get_meteorite_count(meteors, "1999")
+```
+

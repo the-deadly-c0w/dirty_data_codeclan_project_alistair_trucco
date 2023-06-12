@@ -1,0 +1,30 @@
+"0","```r
+refactor_get_meteorite_count <- function(data, input_year){
+  
+  #class conditions for inputs
+  
+  if(\"data.frame\" %in%  class(data)){
+    
+  }else{
+    
+    stop(\"Argument: 'data' must be of class: \\"data.frame\\"\")
+  }
+  
+    if(is.numeric(input_year)){
+    
+  }else{
+    
+    stop(\"Argument: 'input_year' must be of class: \\"numeric\\"\")
+  }
+  
+  n_year <- data %>% 
+    filter(year == input_year) %>% 
+    nrow()
+  
+  if(n_year == 0){
+    print(\"As far as we know, there were no meteorites that year\")
+  }else{
+    paste0(\"In \", input_year, \", there were \", n_year, \" meteorites.\")
+  }
+}
+```"

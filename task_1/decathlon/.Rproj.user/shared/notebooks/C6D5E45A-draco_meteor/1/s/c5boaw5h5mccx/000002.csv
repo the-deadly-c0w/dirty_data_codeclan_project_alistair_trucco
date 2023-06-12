@@ -1,0 +1,4 @@
+"0","```r
+meteors %>% 
+  summarise(mean(mass), .by = fall)
+```"

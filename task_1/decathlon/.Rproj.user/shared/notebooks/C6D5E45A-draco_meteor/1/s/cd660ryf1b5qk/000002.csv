@@ -1,0 +1,5 @@
+"0","```r
+meteors %>% 
+  filter(year >= 2000) %>% 
+  count(year, name = \"n_meteors_discovered\")
+```"
