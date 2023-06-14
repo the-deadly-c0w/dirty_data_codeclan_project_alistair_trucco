@@ -40,7 +40,11 @@ despair <- candy %>%
 meh <- candy %>% 
   filter(rating == "MEH") %>% 
   count(candy, sort = TRUE) %>% 
-    mutate(meh_count = n)
+    rename("meh_count" = "n")
+
+slice_max(joy,joy_count, n = 1)
+slice_max(despair,despair_count, n = 1)
+slice_max(meh,meh_count, n = 1)
 ```
 
 
@@ -49,7 +53,8 @@ meh <- candy %>%
 candy %>% 
   filter(rating == "DESPAIR") %>% 
   filter(candy == "starburst") %>% 
-  count(candy, sort = TRUE)
+  count(candy, sort = TRUE) %>% 
+  rename("starburst_haters" = "n")
 ```
 
 ```{r}
@@ -87,8 +92,12 @@ net_feelies <- function(.data = candy,
 
 
 ```{r}
-net_feelies(.gender = "Male")
-net_feelies(.gender = "Female")
+slice_max(
+  net_feelies(.gender = "Male")
+  , net_feelies, n = 1)
+slice_max(
+  net_feelies(.gender = "Female")
+  , net_feelies, n = 1)
 ```
 
 the two genders are money and Reece's peanut buttercups
@@ -101,7 +110,7 @@ net_feelies_2 <- function(.data = candy,
                         .gender = candy$gender,
                             .country = candy$country
                         ){
-  if(is.vector(.year)){
+  if(length(.year)>1){
     j <- .data %>% 
              filter(rating == "JOY",
                     year == .year,
@@ -177,9 +186,20 @@ net_feelies_2 <- function(.data = candy,
 
 
 ```{r}
+
+slice_max(
 net_feelies_2(.year = 2015)
+, net_feelies, n = 3)
+
+
+slice_max(
 net_feelies_2(.year = 2016)
+, net_feelies, n = 3)
+
+
+slice_max(
 net_feelies_2(.year = 2017)
+, net_feelies, n = 3)
 ```
 
 ```{r}

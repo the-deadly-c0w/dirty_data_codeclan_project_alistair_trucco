@@ -28,16 +28,22 @@ candy_2016_names <- candy_2016 %>%
 candy_2017_names <- candy_2017 %>% 
   clean_names()
 
-# we don't need the 
+# we don't need the time-stamp or id columns 
 
 candy_2015_chopped <- candy_2015_names %>% 
-  select(2:96, 115)
+  select(2:96, 115,
+         -18, -23, -26, -27, -28, -33, -38, -45, -88, -93, #non food items
+         -11, -34, -35, -41, -56, -82, -91, -94 , -95)     #non candy food items
 
 candy_2016_chopped <- candy_2016_names %>% 
-  select(2:106,-6)
+  select(2:106,-6,
+         -12, -14, -15, -21, -26, -27, -31, -32, -43, -79, -102, #non food items
+         -22, -38, -39, -49, -69, -90, -92, -99, -104, -105)     #non candy food items
 
 candy_2017_chopped <- candy_2017_names %>% 
-  select(2:109,-6)
+  select(2:109,-6,
+         -12, -14, -15, -21, -26, -27, -31, -32, -43, -69, -81, -105, #non food items
+         -22, -38, -39, -49, -70, -86, -92, -94, -102, -107, -108)    #non candy food items
 
 
 # standardising col names for age, country, etc.
