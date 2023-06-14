@@ -147,23 +147,23 @@ candy_2017_year <- candy_2017_year %>%
 
 # edit all countries to have consistent names across all years
 
-candy_2016_year$country <- case_when(str_detect(candy_2016_year$country, "kingdom|u.k.|kindom|england|endland|scotland") ~ "uk",
-                                     str_detect(candy_2016_year$country, "state|alaska|new jersey|pittsburgh|california|usa|u\\.s\\.|america|united s|^us$|murica|merica|ussa|trumpistan|yoo|cascadia|u s a|murrika|amerca|new york|u s|us of a|north carolina|eua") ~ "usa",
-                                     str_detect(candy_2016_year$country, "españa") ~ "spain",
-                                     str_detect(candy_2016_year$country, "the netherlands") ~ "netherlands",
-                                     str_detect(candy_2016_year$country, "can") ~ "canada",
+candy_2016_year$country <- case_when(str_detect(candy_2016_year$country, "uk|kingdom|u.k.|kindom|england|endland|scotland") ~ "uk",
+                                     str_detect(candy_2016_year$country, "usa|state|alaska|new jersey|pittsburgh|california|usa|u\\.s\\.|america|united s|^us$|murica|merica|ussa|trumpistan|yoo|cascadia|u s a|murrika|amerca|new york|u s|us of a|north carolina|eua") ~ "usa",
+ #                                    str_detect(candy_2016_year$country, "españa") ~ "spain",
+ #                                    str_detect(candy_2016_year$country, "the netherlands") ~ "netherlands",
+                                     str_detect(candy_2016_year$country, "canada|can") ~ "canada",
                                      str_detect(candy_2016_year$country, "[0-9]|^a$|^ud$|atlantis|narnia|europe|earth|old men|insanity lately|this|see above|denial|god\\'s|somewhere|best ones|neverland|equator|i don't know anymore|fear and loathing") ~ NA,
-                                     .default = candy_2016_year$country)
+                                     .default = "other")
 
 
 
 candy_2017_year$country <- case_when(str_detect(candy_2017_year$country, "kingdom|u.k.|kindom|england|endland|scotland") ~ "uk",
                                      str_detect(candy_2017_year$country, "state|alaska|new jersey|pittsburgh|california|usa|u\\.s\\.|america|united s|^us$|murica|merica|ussa|trumpistan|yoo|cascadia|u s a|murrika|amerca|new york|u s|us of a|north carolina|eua") ~ "usa",
-                                     str_detect(candy_2017_year$country, "españa") ~ "spain",
-                                     str_detect(candy_2017_year$country, "the netherlands") ~ "netherlands",
+                                     #str_detect(candy_2017_year$country, "españa") ~ "spain",
+                                     #str_detect(candy_2017_year$country, "the netherlands") ~ "netherlands",
                                      str_detect(candy_2017_year$country, "can") ~ "canada",
                                      str_detect(candy_2017_year$country, "[0-9]|^a$|^ud$|atlantis|narnia|europe|earth|old men|insanity lately|this|see above|denial|god\\'s|somewhere|best ones|neverland|equator|i don't know anymore|fear and loathing") ~ NA,
-                                     .default = candy_2017_year$country)
+                                     .default = "other")
 
 
 

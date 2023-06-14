@@ -104,7 +104,9 @@ net_feelies_2 <- function(.data = candy,
   if(is.vector(.year)){
     j <- .data %>% 
              filter(rating == "JOY",
-                    year == .year
+                    year == .year,
+                    country == .country,
+                    gender == .gender
                     ) %>% 
       count(candy, sort = TRUE) %>% 
       rename("joy_count" = "n")
@@ -112,7 +114,9 @@ net_feelies_2 <- function(.data = candy,
         
       d <- .data %>% 
              filter(rating == "DESPAIR",
-             year == .year
+             year == .year,
+             country == .country,
+             gender == .gender
              ) %>% 
       count(candy, sort = TRUE) %>% 
       rename("despair_count" = "n")
@@ -182,5 +186,6 @@ net_feelies_2(.year = 2017)
 net_feelies_2(.country = "usa")
 net_feelies_2(.country = "canada")
 net_feelies_2(.country = "uk")
+net_feelies_2(.country = "other")
 ```
 
