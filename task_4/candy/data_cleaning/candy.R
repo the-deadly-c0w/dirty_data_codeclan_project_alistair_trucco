@@ -65,13 +65,19 @@ rename("age" = "how_old_are_you",
 
 candy_2015_age <- candy_2015_renamed %>% 
   mutate(age = as.integer(age))
+candy_2015_age$age <- case_when(candy_2015_age$age > 120 ~ NA,
+                                .default = candy_2015_age$age)
 
 
 candy_2016_age <- candy_2016_renamed %>% 
   mutate(age = as.integer(age))
+candy_2016_age$age <- case_when(candy_2016_age$age > 120 ~ NA,
+                                .default = candy_2016_age$age)
 
 candy_2017_age <- candy_2017_chopped %>% 
   mutate(age = as.integer(age))
+candy_2017_age$age <- case_when(candy_2017_age$age > 120 ~ NA,
+                                .default = candy_2017_age$age)
 
 
 #candy_2015_age %>% 
@@ -213,3 +219,5 @@ candy_2015_pivot <- add_column(candy_2015_pivot, NA, .after = "gender") %>%
 
 
 gigachad <- bind_rows(candy_2015_pivot, candy_2016_pivot, candy_2017_pivot)
+
+write_csv(gigachad, "Desktop/CodeClan Origins Part 2/dirty_data_codeclan_project_alistair_trucco/task_4/candy/data/candy_clean.csv")

@@ -1,0 +1,186 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+candy <- read_csv("../data/candy_clean.csv")
+```
+
+```{r}
+candy %>% 
+  filter(!is.na(rating)) %>% 
+  nrow()
+```
+SOMETHING WRONG: GOT RID OF ALL NAS?
+
+
+```{r}
+candy %>% 
+  filter(going_out == TRUE) %>% 
+  summarise(mean(age, na.rm = TRUE))
+```
+```{r}
+candy %>% 
+  filter(going_out == FALSE) %>% 
+  summarise(mean(age, na.rm = TRUE))
+```
+
+```{r}
+joy <- candy %>% 
+  filter(rating == "JOY") %>% 
+  count(candy, sort = TRUE) %>% 
+  rename("joy_count" = "n")
+
+despair <- candy %>% 
+  filter(rating == "DESPAIR") %>% 
+  count(candy, sort = TRUE) %>% 
+  rename("despair_count" = "n")
+
+meh <- candy %>% 
+  filter(rating == "MEH") %>% 
+  count(candy, sort = TRUE) %>% 
+    mutate(meh_count = n)
+```
+
+
+
+```{r}
+candy %>% 
+  filter(rating == "DESPAIR") %>% 
+  filter(candy == "starburst") %>% 
+  count(candy, sort = TRUE)
+```
+
+```{r}
+net_feelies <- function(.data = candy,
+                        .year = candy$year,
+                        .gender = candy$gender,
+                        .country = candy$country
+                        ){
+  j <- .data %>% 
+         filter(rating == "JOY",
+                year == .year,
+                gender == .gender,
+                country == .country
+                ) %>% 
+  count(candy, sort = TRUE) %>% 
+  rename("joy_count" = "n")
+  
+    
+  d <- .data %>% 
+         filter(rating == "DESPAIR",
+         gender == .gender,
+         year == .year,
+         country == .country,
+         ) %>% 
+  count(candy, sort = TRUE) %>% 
+  rename("despair_count" = "n")
+     
+  full_join(j,d, by = "candy") %>% 
+  mutate(net_feelies = joy_count - despair_count) %>% 
+  arrange(-net_feelies)
+}
+```
+
+
+
+
+```{r}
+net_feelies(.gender = "Male")
+net_feelies(.gender = "Female")
+```
+
+the two genders are money and Reece's peanut buttercups
+
+
+
+```{r}
+net_feelies_2 <- function(.data = candy,
+                        .year = candy$year,
+                        .gender = candy$gender,
+                            .country = candy$country
+                        ){
+  if(is.vector(.year)){
+    j <- .data %>% 
+             filter(rating == "JOY",
+                    year == .year
+                    ) %>% 
+      count(candy, sort = TRUE) %>% 
+      rename("joy_count" = "n")
+      
+        
+      d <- .data %>% 
+             filter(rating == "DESPAIR",
+             year == .year
+             ) %>% 
+      count(candy, sort = TRUE) %>% 
+      rename("despair_count" = "n")
+         
+      full_join(j,d, by = "candy") %>% 
+      mutate(net_feelies = joy_count - despair_count) %>% 
+      arrange(-net_feelies)
+    
+  }else{
+      if(.year != 2015){
+      j <- .data %>% 
+             filter(rating == "JOY",
+                    year == .year,
+                    gender == .gender,
+                    country == .country
+                    ) %>% 
+      count(candy, sort = TRUE) %>% 
+      rename("joy_count" = "n")
+      
+        
+      d <- .data %>% 
+             filter(rating == "DESPAIR",
+             gender == .gender,
+             year == .year,
+             country == .country,
+             ) %>% 
+      count(candy, sort = TRUE) %>% 
+      rename("despair_count" = "n")
+         
+      full_join(j,d, by = "candy") %>% 
+      mutate(net_feelies = joy_count - despair_count) %>% 
+      arrange(-net_feelies)
+      }else{
+        
+      
+      j <- .data %>% 
+             filter(rating == "JOY",
+                    year == .year
+                    ) %>% 
+      count(candy, sort = TRUE) %>% 
+      rename("joy_count" = "n")
+      
+        
+      d <- .data %>% 
+             filter(rating == "DESPAIR",
+             year == .year
+             ) %>% 
+      count(candy, sort = TRUE) %>% 
+      rename("despair_count" = "n")
+         
+      full_join(j,d, by = "candy") %>% 
+      mutate(net_feelies = joy_count - despair_count) %>% 
+      arrange(-net_feelies)
+    }
+  }
+}
+```
+
+
+```{r}
+net_feelies_2(.year = 2015)
+net_feelies_2(.year = 2016)
+net_feelies_2(.year = 2017)
+```
+
+```{r}
+net_feelies_2(.country = "usa")
+net_feelies_2(.country = "canada")
+net_feelies_2(.country = "uk")
+```
+
