@@ -3,11 +3,50 @@ title: "R Notebook"
 output: html_notebook
 ---
 
-```{r}
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.align = 'center')
+```
+
+
+# Cleaning Candy
+
+
+It's like when you leave it in your pockets then put them through the wash 
+
+Losing columns that are not candy or data by which we want to sort the ratings.
+Making columns match to join later
+
+```{r, echo=FALSE, fig.cap=" ", out.width = '60%'}
+knitr::include_graphics("../screenshots/initial_column_tidying.png")
+knitr::include_graphics("../screenshots/initial_column_tidying_2.png")
+```
+
+add year column to each table 
+
+pivoting long on all rated columns to analyse by rating later.
+adding columns to 2015 to make it compatible with other tables.
+
+```{r, echo=FALSE, fig.cap=" ", out.width = '60%'}
+knitr::include_graphics("../screenshots/pivot.png")
+```
+
+
+```{r, echo=FALSE, fig.cap=" ", out.width = '60%'}
+knitr::include_graphics("../screenshots/age.png")
+```
+
+
+
+
+
+
+
+```{r, echo=FALSE}
 library(tidyverse)
 ```
 
-```{r}
+```{r, echo=FALSE}
 candy <- read_csv("../data/candy_clean.csv")
 ```
 

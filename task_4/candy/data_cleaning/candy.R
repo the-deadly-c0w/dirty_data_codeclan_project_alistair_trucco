@@ -5,7 +5,6 @@ library(janitor)
 library(assertr)
 library(readxl)
 
-here::here()
 
 
 candy_2015 <- read_xlsx("Desktop/CodeClan Origins Part 2/dirty_data_codeclan_project_alistair_trucco/task_4/candy/data/boing-boing-candy-2015.xlsx")
@@ -69,7 +68,7 @@ rename("age" = "how_old_are_you",
 #                         YEAR COLUMNS
 
 
-# adding year columns to each year for analysis after joining the databases
+# adding year columns to each year to aid analysis after joining the databases
 
 candy_2015_year <- candy_2015_renamed %>% 
   mutate(year = 2015)
@@ -144,8 +143,8 @@ candy_age <- candy_joined %>%
 
 # remove ages beyond the oldest age
 candy_age$age <- case_when(candy_age$age > 120 ~ NA,
+                           candy_age$age < 0 ~ NA,
                                 .default = candy_age$age)
-
 
 
 #                         GOING OUT
@@ -167,14 +166,11 @@ candy_go <- candy_age %>%
 
 
 
-# convert all countries to lower case to reduce mismatching cases
+# convert all countries to lower case to reduce mismatching cases, hence manual
+# string dectrion work
 
 candy_go <- candy_go %>% 
   mutate(country = str_to_lower(country))
-
-
-
-
 
 
 
@@ -184,7 +180,7 @@ candy_go <- candy_go %>%
 ### to include all countries
 
 
-candy_go$country <- case_when(str_detect(candy_go$country, "uk|kingdom|u.k.|kindom|england|endland|scotland") ~ "uk",
+candy_go$country <- case_when(str_detect(candy_go$country, "^uk$|kingdom|u.k.|kindom|england|endland|scotland") ~ "uk",
                                      str_detect(candy_go$country, "usa|state|alaska|new jersey|pittsburgh|california|usa|u\\.s\\.|america|united s|^us$|murica|merica|ussa|trumpistan|yoo|cascadia|u s a|murrika|amerca|new york|u s|us of a|north carolina|eua") ~ "usa",
                                   #  str_detect(candy_go$country, "españa") ~ "spain",
                                   #  str_detect(candy_go$country, "the netherlands") ~ "netherlands",
