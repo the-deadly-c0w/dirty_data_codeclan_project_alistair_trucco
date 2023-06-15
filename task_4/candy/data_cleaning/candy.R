@@ -29,6 +29,8 @@ candy_2017_names <- candy_2017 %>%
   clean_names()
 
 # we don't need the time-stamp or id columns 
+# nor do we need the questions at the end 
+# or the non-candy items
 
 candy_2015_chopped <- candy_2015_names %>% 
   select(2:96, 115,
@@ -80,6 +82,7 @@ candy_2016_age <- candy_2016_renamed %>%
 candy_2016_age$age <- case_when(candy_2016_age$age > 120 ~ NA,
                                 .default = candy_2016_age$age)
 
+
 candy_2017_age <- candy_2017_chopped %>% 
   mutate(age = as.integer(age))
 candy_2017_age$age <- case_when(candy_2017_age$age > 120 ~ NA,
@@ -122,6 +125,8 @@ candy_2017_go %>%
 
 
 
+# adding year columns to each year for analysis after joining the databases
+
 candy_2015_year <- candy_2015_go %>% 
   mutate(year = 2015)
 
@@ -152,6 +157,9 @@ candy_2017_year <- candy_2017_year %>%
 
 
 # edit all countries to have consistent names across all years
+### commented sections are for when not using 'other' as the default 
+### to include all countries
+
 
 candy_2016_year$country <- case_when(str_detect(candy_2016_year$country, "uk|kingdom|u.k.|kindom|england|endland|scotland") ~ "uk",
                                      str_detect(candy_2016_year$country, "usa|state|alaska|new jersey|pittsburgh|california|usa|u\\.s\\.|america|united s|^us$|murica|merica|ussa|trumpistan|yoo|cascadia|u s a|murrika|amerca|new york|u s|us of a|north carolina|eua") ~ "usa",
@@ -194,6 +202,10 @@ candy_2017_year$country <- case_when(str_detect(candy_2017_year$country, "kingdo
 
 #                 PIVOTING LONG 
 
+
+
+# pivoting all candy long to get ratings into one column
+
 candy_2015_pivot <- pivot_longer(candy_2015_year,
              cols = "butterfinger":"necco_wafers",
              names_to = "candy",
@@ -224,6 +236,11 @@ candy_2015_pivot <- add_column(candy_2015_pivot, NA, .after = "gender") %>%
   rename("country" = "NA")
 
 
+
+# merging all three datasets
+
 gigachad <- bind_rows(candy_2015_pivot, candy_2016_pivot, candy_2017_pivot)
+
+# writing into the data folder
 
 write_csv(gigachad, "Desktop/CodeClan Origins Part 2/dirty_data_codeclan_project_alistair_trucco/task_4/candy/data/candy_clean.csv")

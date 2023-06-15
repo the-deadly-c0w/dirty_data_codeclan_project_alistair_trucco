@@ -4,27 +4,68 @@ output: html_notebook
 ---
 
 ```{r}
-candy <- read_csv("../data/candy_clean.csv")
+library(tidyverse)
 ```
 
 ```{r}
-candy %>% 
-  filter(!is.na(rating)) %>% 
-  nrow()
+candy <- read_csv("../data/candy_clean.csv")
 ```
-SOMETHING WRONG: GOT RID OF ALL NAS?
 
+    number of ratings over all years
+
+```{r}
+a <- candy %>% 
+  filter(!is.na(rating), year == 2015) %>% 
+  nrow()
+# we removed NA entries in the rating column at the cleaning stage, so this
+# has the same number of rows as candy
+
+b <- candy %>% 
+  filter(!is.na(rating), year == 2016) %>% 
+  nrow()
+
+c <- candy %>% 
+  filter(!is.na(rating), year == 2017) %>% 
+  nrow()
+
+paste("2015     2016     2017")
+paste(a, " ", b, "  ", c)
+paste(round(a/(a+b+c), 2)," : ",round(b/(a+b+c), 2)," : ",round(c/(a+b+c), 2))
+
+# feeling goofy had to lay it out by hand 
+```
+
+
+
+
+
+
+    Finding mean age of those going out trick or treating
 
 ```{r}
 candy %>% 
   filter(going_out == TRUE) %>% 
   summarise(mean(age, na.rm = TRUE))
+
+# removing NAs so as not to receive NA as the mean >:(
 ```
+
+
+
+
+    Finding mean age of those not going out trick or treating
+
 ```{r}
 candy %>% 
   filter(going_out == FALSE) %>% 
   summarise(mean(age, na.rm = TRUE))
 ```
+
+
+
+    most loved, despised and uncared for a.k.a
+    
+    the good, the bad and the meh
 
 ```{r}
 joy <- candy %>% 
@@ -42,12 +83,13 @@ meh <- candy %>%
   count(candy, sort = TRUE) %>% 
     rename("meh_count" = "n")
 
-slice_max(joy,joy_count, n = 1)
-slice_max(despair,despair_count, n = 1)
-slice_max(meh,meh_count, n = 1)
+# slice max with n = 2 for joy due to controversial 'any full sized snack bar'
+slice_max(joy, joy_count, n = 2)
+slice_max(despair, despair_count, n = 1)
+slice_max(meh, meh_count, n = 1)
 ```
 
-
+    counting fools (starburst despairers)
 
 ```{r}
 candy %>% 
@@ -57,12 +99,19 @@ candy %>%
   rename("starburst_haters" = "n")
 ```
 
+
+    writing a function for net feelies (joy - despair) with filters
+
 ```{r}
 net_feelies <- function(.data = candy,
                         .year = candy$year,
                         .gender = candy$gender,
                         .country = candy$country
                         ){
+  
+  # create counts for both joy and despair with the filter stated in function
+  # then joins tables to output one table with candy arranged by (joy - despair)
+  
   j <- .data %>% 
          filter(rating == "JOY",
                 year == .year,
@@ -82,6 +131,11 @@ net_feelies <- function(.data = candy,
   count(candy, sort = TRUE) %>% 
   rename("despair_count" = "n")
      
+  
+  # this join does mean that entries that do not have a minimum both 1
+  # joy and despair will disappear but these are not too valuable to 
+  # know with this functions use
+  
   full_join(j,d, by = "candy") %>% 
   mutate(net_feelies = joy_count - despair_count) %>% 
   arrange(-net_feelies)
@@ -89,75 +143,63 @@ net_feelies <- function(.data = candy,
 ```
 
 
-
+    Net feelies by gender (slices can be commented out for full rankings)
 
 ```{r}
 slice_max(
   net_feelies(.gender = "Male")
-  , net_feelies, n = 1)
+  , net_feelies, n = 2)
+
+
 slice_max(
   net_feelies(.gender = "Female")
-  , net_feelies, n = 1)
+  , net_feelies, n = 2)
 ```
 
 the two genders are money and Reece's peanut buttercups
 
 
 
+
+    Return of the feelies
+    
+    new feelies function to fix bugs from the first
+
 ```{r}
-net_feelies_2 <- function(.data = candy,
+
+# this much longer conditional function had to be introduced due to the NAs in 2015 
+# country and gender returning empty tables (NA == NA returns NA, not TRUE)
+
+
+net_feelies_debug <- function(.data = candy,
                         .year = candy$year,
                         .gender = candy$gender,
                             .country = candy$country
                         ){
+  # checking if .year is a vector of length > 1 i.e. the default instead of a specific year
+  # this runs the original script
+  
+  
   if(length(.year)>1){
-    j <- .data %>% 
-             filter(rating == "JOY",
-                    year == .year,
-                    country == .country,
-                    gender == .gender
-                    ) %>% 
-      count(candy, sort = TRUE) %>% 
-      rename("joy_count" = "n")
-      
-        
-      d <- .data %>% 
-             filter(rating == "DESPAIR",
-             year == .year,
-             country == .country,
-             gender == .gender
-             ) %>% 
-      count(candy, sort = TRUE) %>% 
-      rename("despair_count" = "n")
-         
-      full_join(j,d, by = "candy") %>% 
-      mutate(net_feelies = joy_count - despair_count) %>% 
-      arrange(-net_feelies)
+    
+    net_feelies(.data = .data,
+                .year = .year,
+                .gender = .gender,
+                .country = .country )
     
   }else{
+    
+    # unfortunately this could not be in an or statement in the first if, r 
+    # will try to compare every value in the vector with 2015 returning an error
+    
       if(.year != 2015){
-      j <- .data %>% 
-             filter(rating == "JOY",
-                    year == .year,
-                    gender == .gender,
-                    country == .country
-                    ) %>% 
-      count(candy, sort = TRUE) %>% 
-      rename("joy_count" = "n")
+            
+    net_feelies(.data = .data,
+                .year = .year,
+                .gender = .gender,
+                .country = .country )
+
       
-        
-      d <- .data %>% 
-             filter(rating == "DESPAIR",
-             gender == .gender,
-             year == .year,
-             country == .country,
-             ) %>% 
-      count(candy, sort = TRUE) %>% 
-      rename("despair_count" = "n")
-         
-      full_join(j,d, by = "candy") %>% 
-      mutate(net_feelies = joy_count - despair_count) %>% 
-      arrange(-net_feelies)
       }else{
         
       
@@ -185,27 +227,47 @@ net_feelies_2 <- function(.data = candy,
 ```
 
 
+    Top candies by year
+
 ```{r}
 
 slice_max(
-net_feelies_2(.year = 2015)
+net_feelies_debug(.year = 2015)
 , net_feelies, n = 3)
 
 
 slice_max(
-net_feelies_2(.year = 2016)
+net_feelies_debug(.year = 2016)
 , net_feelies, n = 3)
 
 
 slice_max(
-net_feelies_2(.year = 2017)
+net_feelies_debug(.year = 2017)
 , net_feelies, n = 3)
 ```
 
+
+    Top candies by country 
+
 ```{r}
-net_feelies_2(.country = "usa")
-net_feelies_2(.country = "canada")
-net_feelies_2(.country = "uk")
-net_feelies_2(.country = "other")
+net_feelies_debug(.country = "usa")
+net_feelies_debug(.country = "canada")
+net_feelies_debug(.country = "uk")
+net_feelies_debug(.country = "other")
+```
+
+
+```{r}
+x5 <- 1
+x6 <- 2
+x7 <- 3
+
+
+
+for (i in 5:7){
+  #x <- as.symbol(paste0("x",i))
+  #print(x)
+  x'i'
+}
 ```
 
