@@ -14,7 +14,7 @@ candy_2017 <- read_xlsx("Desktop/CodeClan Origins Part 2/dirty_data_codeclan_pro
 
 
 
-# removing all "q1_"s from 2017
+# removing all "q[n]_"s from 2017
 
 names(candy_2017) <-  str_remove(names(candy_2017), "^...")
 
@@ -66,136 +66,22 @@ rename("age" = "how_old_are_you",
 
 
 
-#                          AGE
-
-
-# changing the age column to integer, characters will be turned to NAs
-
-candy_2015_age <- candy_2015_renamed %>% 
-  mutate(age = as.integer(age))
-candy_2015_age$age <- case_when(candy_2015_age$age > 120 ~ NA,
-                                .default = candy_2015_age$age)
-
-
-candy_2016_age <- candy_2016_renamed %>% 
-  mutate(age = as.integer(age))
-candy_2016_age$age <- case_when(candy_2016_age$age > 120 ~ NA,
-                                .default = candy_2016_age$age)
-
-
-candy_2017_age <- candy_2017_chopped %>% 
-  mutate(age = as.integer(age))
-candy_2017_age$age <- case_when(candy_2017_age$age > 120 ~ NA,
-                                .default = candy_2017_age$age)
-
-
-#candy_2015_age %>% 
-#  filter(is.na(age)) %>% 
-#  nrow()
-# NAs at 285 compared with 200
-
-#candy_2016_renamed %>% 
-#  filter(is.na(age)) %>% 
-#  nrow()
-# NAs at 68 compared with 68
-
-
-
-#                         GOING OUT
-
-
-# changing "yes" "no" to a boolean for convenience
-
-candy_2015_go <- candy_2015_age %>% 
-  mutate(going_out = str_detect(going_out, "Yes"))
-
-candy_2016_go <- candy_2016_age %>% 
-  mutate(going_out = str_detect(going_out, "Yes"))
-
-candy_2017_go <- candy_2017_age %>% 
-  mutate(going_out = str_detect(going_out, "Yes"))
-
-candy_2017_go %>% 
-  filter(is.na(going_out)) %>% 
-  nrow()
-
-
-
 #                         YEAR COLUMNS
-
 
 
 # adding year columns to each year for analysis after joining the databases
 
-candy_2015_year <- candy_2015_go %>% 
+candy_2015_year <- candy_2015_renamed %>% 
   mutate(year = 2015)
 
-candy_2016_year <- candy_2016_go %>% 
+candy_2016_year <- candy_2016_renamed %>% 
   mutate(year = 2016)
 
-candy_2017_year <- candy_2017_go %>% 
+candy_2017_year <- candy_2017_chopped %>% 
   mutate(year = 2017)
 
 
 
-#                     COUNTRY
-
-
-
-
-# convert all countries to lower case to reduce mismatching cases
-
-candy_2016_year <- candy_2016_year %>% 
-  mutate(country = str_to_lower(country))
-candy_2017_year <- candy_2017_year %>%
-  mutate(country = str_to_lower(country))
-
-
-
-
-
-
-
-# edit all countries to have consistent names across all years
-### commented sections are for when not using 'other' as the default 
-### to include all countries
-
-
-candy_2016_year$country <- case_when(str_detect(candy_2016_year$country, "uk|kingdom|u.k.|kindom|england|endland|scotland") ~ "uk",
-                                     str_detect(candy_2016_year$country, "usa|state|alaska|new jersey|pittsburgh|california|usa|u\\.s\\.|america|united s|^us$|murica|merica|ussa|trumpistan|yoo|cascadia|u s a|murrika|amerca|new york|u s|us of a|north carolina|eua") ~ "usa",
-                                  #  str_detect(candy_2016_year$country, "españa") ~ "spain",
-                                  #  str_detect(candy_2016_year$country, "the netherlands") ~ "netherlands",
-                                     str_detect(candy_2016_year$country, "canada|can") ~ "canada",
-                                     str_detect(candy_2016_year$country, "[0-9]|^a$|^ud$|atlantis|narnia|europe|earth|old men|insanity lately|this|see above|denial|god\\'s|somewhere|best ones|neverland|equator|i don't know anymore|fear and loathing") ~ NA,
-                                     .default = "other")
-
-
-
-candy_2017_year$country <- case_when(str_detect(candy_2017_year$country, "kingdom|u.k.|kindom|england|endland|scotland") ~ "uk",
-                                     str_detect(candy_2017_year$country, "state|alaska|new jersey|pittsburgh|california|usa|u\\.s\\.|america|united s|^us$|murica|merica|ussa|trumpistan|yoo|cascadia|u s a|murrika|amerca|new york|u s|us of a|north carolina|eua") ~ "usa",
-                                     #str_detect(candy_2017_year$country, "españa") ~ "spain",
-                                     #str_detect(candy_2017_year$country, "the netherlands") ~ "netherlands",
-                                     str_detect(candy_2017_year$country, "can") ~ "canada",
-                                     str_detect(candy_2017_year$country, "[0-9]|^a$|^ud$|atlantis|narnia|europe|earth|old men|insanity lately|this|see above|denial|god\\'s|somewhere|best ones|neverland|equator|i don't know anymore|fear and loathing") ~ NA,
-                                     .default = "other")
-
-
-
-# candy_2016_renamed <- candy_2016_renamed %>% 
-#   mutate(country_clean = 
-#            if(str_detect(country_clean, "state")){
-#             "usa"
-# })
-# 
-# 
-# for(i in 1:length(candy_2016_renamed$country_clean)){
-#   if(str_detect(candy_2016_renamed$country_clean[i], "state")){
-#     candy_2016_renamed$country_clean[i] = "usa"
-# }
-#}
-#setdiff(colnames(candy_2015_chopped), colnames(candy_2016_chopped)) 
-#setdiff(colnames(candy_2016_chopped), colnames(candy_2015_chopped))
-#setdiff(colnames(candy_2016_chopped), colnames(candy_2017_chopped)) 
 
 
 
@@ -207,25 +93,25 @@ candy_2017_year$country <- case_when(str_detect(candy_2017_year$country, "kingdo
 # pivoting all candy long to get ratings into one column
 
 candy_2015_pivot <- pivot_longer(candy_2015_year,
-             cols = "butterfinger":"necco_wafers",
-             names_to = "candy",
-             values_to = "rating",
-             values_drop_na = TRUE)
+                                 cols = "butterfinger":"necco_wafers",
+                                 names_to = "candy",
+                                 values_to = "rating",
+                                 values_drop_na = TRUE)
 
 candy_2016_pivot <- pivot_longer(candy_2016_year,
-             cols = "x100_grand_bar":"york_peppermint_patties",
-             names_to = "candy",
-             values_to = "rating",
-             values_drop_na = TRUE)
+                                 cols = "x100_grand_bar":"york_peppermint_patties",
+                                 names_to = "candy",
+                                 values_to = "rating",
+                                 values_drop_na = TRUE)
 
 candy_2017_pivot <- pivot_longer(candy_2017_year,
-             cols = "x100_grand_bar":"york_peppermint_patties",
-             names_to = "candy",
-             values_to = "rating",
-             values_drop_na = TRUE)
+                                 cols = "x100_grand_bar":"york_peppermint_patties",
+                                 names_to = "candy",
+                                 values_to = "rating",
+                                 values_drop_na = TRUE)
 
 
-#to make 2015 compatible with later years
+# adding missing column names to make 2015 compatible with later years
 
 
 candy_2015_pivot <- add_column(candy_2015_pivot, NA, .after = "going_out") %>% 
@@ -239,8 +125,74 @@ candy_2015_pivot <- add_column(candy_2015_pivot, NA, .after = "gender") %>%
 
 # merging all three datasets
 
-gigachad <- bind_rows(candy_2015_pivot, candy_2016_pivot, candy_2017_pivot)
+candy_joined <- bind_rows(candy_2015_pivot, candy_2016_pivot, candy_2017_pivot)
+
+
+
+
+
+
+
+
+#                          AGE
+
+
+# changing the age column to integer, characters will be turned to NAs
+
+candy_age <- candy_joined %>% 
+  mutate(age = as.integer(age))
+
+# remove ages beyond the oldest age
+candy_age$age <- case_when(candy_age$age > 120 ~ NA,
+                                .default = candy_age$age)
+
+
+
+#                         GOING OUT
+
+
+# changing "yes" "no" to a boolean for convenience
+
+
+# no need for extra conditions as there are no NAs in any of the columns
+candy_go <- candy_age %>% 
+  mutate(going_out = str_detect(going_out, "Yes"))
+
+
+
+
+
+#                     COUNTRY
+
+
+
+
+# convert all countries to lower case to reduce mismatching cases
+
+candy_go <- candy_go %>% 
+  mutate(country = str_to_lower(country))
+
+
+
+
+
+
+
+
+# edit all countries to have consistent names across all years
+### commented sections are for when not using 'other' as the default 
+### to include all countries
+
+
+candy_go$country <- case_when(str_detect(candy_go$country, "uk|kingdom|u.k.|kindom|england|endland|scotland") ~ "uk",
+                                     str_detect(candy_go$country, "usa|state|alaska|new jersey|pittsburgh|california|usa|u\\.s\\.|america|united s|^us$|murica|merica|ussa|trumpistan|yoo|cascadia|u s a|murrika|amerca|new york|u s|us of a|north carolina|eua") ~ "usa",
+                                  #  str_detect(candy_go$country, "españa") ~ "spain",
+                                  #  str_detect(candy_go$country, "the netherlands") ~ "netherlands",
+                                     str_detect(candy_go$country, "canada|can") ~ "canada",
+                                     str_detect(candy_go$country, "[0-9]|^a$|^ud$|atlantis|narnia|europe|earth|old men|insanity lately|this|see above|denial|god\\'s|somewhere|best ones|neverland|equator|i don't know anymore|fear and loathing") ~ NA,
+                                     .default = "other")
+
 
 # writing into the data folder
 
-write_csv(gigachad, "Desktop/CodeClan Origins Part 2/dirty_data_codeclan_project_alistair_trucco/task_4/candy/data/candy_clean.csv")
+write_csv(candy_go, "Desktop/CodeClan Origins Part 2/dirty_data_codeclan_project_alistair_trucco/task_4/candy/data/candy_clean.csv")
