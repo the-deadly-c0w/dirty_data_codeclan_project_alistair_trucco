@@ -1,6 +1,8 @@
 ---
 title: "R Notebook"
-output: html_notebook
+output:
+  html_document:
+    df_print: paged
 ---
 
 
@@ -9,10 +11,33 @@ knitr::opts_chunk$set(echo = TRUE, fig.align = 'center')
 ```
 
 
+# Halloween Candy Data
+
+A project using data comprised of three databases.
+Each database is a survey performed yearly between 2015 and 2017.
+These surveys are all similar but never identical, both in formatting and the
+questions asked so cleaning and tidying is required before the data can be analysed
+together.
+
+Cleaning proved to be a long and sometimes laborious task, with certain parts of 
+the data, for example the country column, requiring individual changing of many 
+entries to make them consistent with the rest of the data.
+
+The script was also hundreds of lines long, now being reduced by some changes in
+the order of execution that allowed for less repeated code.
+
+during the analysis stage, a great deal of time was spent on a fairly long function
+where solving the problems in a longer format would've actually saved a lot of time.
+The thinking was that any other questions with one or more filters could be answered
+using the same function.
+
+
+
+
 # Cleaning Candy
 
 
-It's like when you leave it in your pockets then put them through the wash 
+It's like when you leave it in your pockets then put them through the wash.
 
 Losing columns that are not candy or data by which we want to sort the ratings.
 Making columns match to join later
@@ -31,15 +56,31 @@ adding columns to 2015 to make it compatible with other tables.
 knitr::include_graphics("../screenshots/pivot.png")
 ```
 
+make age into integer for numeric analysis
+remove impossible ages and text entries, not worth runnig complex textual analysis
+or going through text entries by hand.
+
 
 ```{r, echo=FALSE, fig.cap=" ", out.width = '60%'}
 knitr::include_graphics("../screenshots/age.png")
 ```
 
 
+homogenise all countries entries for the same countries by first setting all 
+to lower case then applying regex filters for synonyms
 
 
 
+```{r, echo=FALSE, fig.cap=" ", out.width = '60%'}
+knitr::include_graphics("../screenshots/country_str_to_lower.png")
+knitr::include_graphics("../screenshots/regex.png")
+```
+
+
+
+# Analysis
+
+now that the data is clean we can look into 
 
 
 ```{r, echo=FALSE}
@@ -50,7 +91,7 @@ library(tidyverse)
 candy <- read_csv("../data/candy_clean.csv")
 ```
 
-    number of ratings over all years
+# number of ratings over all years
 
 ```{r}
 a <- candy %>% 
@@ -67,8 +108,7 @@ c <- candy %>%
   filter(!is.na(rating), year == 2017) %>% 
   nrow()
 
-paste("2015     2016     2017")
-paste(a, " ", b, "  ", c)
+paste("2015: ", a, "  2016: ", b, " 2017; ", c)
 paste(round(a/(a+b+c), 2)," : ",round(b/(a+b+c), 2)," : ",round(c/(a+b+c), 2))
 
 # feeling goofy had to lay it out by hand 
@@ -79,7 +119,7 @@ paste(round(a/(a+b+c), 2)," : ",round(b/(a+b+c), 2)," : ",round(c/(a+b+c), 2))
 
 
 
-    Finding mean age of those going out trick or treating
+# Finding mean age of those going out trick or treating
 
 ```{r}
 candy %>% 
@@ -92,7 +132,7 @@ candy %>%
 
 
 
-    Finding mean age of those not going out trick or treating
+# Finding mean age of those not going out trick or treating
 
 ```{r}
 candy %>% 
@@ -102,9 +142,9 @@ candy %>%
 
 
 
-    most loved, despised and uncared for a.k.a
+# most loved, despised and uncared for a.k.a
     
-    the good, the bad and the meh
+the good, the bad and the meh
 
 ```{r}
 joy <- candy %>% 
@@ -128,7 +168,7 @@ slice_max(despair, despair_count, n = 1)
 slice_max(meh, meh_count, n = 1)
 ```
 
-    counting fools (starburst despairers)
+# counting fools (starburst despairers)
 
 ```{r}
 candy %>% 
@@ -139,7 +179,10 @@ candy %>%
 ```
 
 
-    writing a function for net feelies (joy - despair) with filters
+
+# Net feelies by gender 
+
+writing a function for net feelies (joy - despair) with filters
 
 ```{r}
 net_feelies <- function(.data = candy,
@@ -182,7 +225,7 @@ net_feelies <- function(.data = candy,
 ```
 
 
-    Net feelies by gender (slices can be commented out for full rankings)
+slices can be commented out for full rankings
 
 ```{r}
 slice_max(
@@ -200,9 +243,9 @@ the two genders are money and Reece's peanut buttercups
 
 
 
-    Return of the feelies
+# Return of the feelies
     
-    new feelies function to fix bugs from the first
+new feelies function to fix bugs from the first
 
 ```{r}
 
@@ -266,7 +309,7 @@ net_feelies_debug <- function(.data = candy,
 ```
 
 
-    Top candies by year
+# Top candies by year
 
 ```{r}
 
@@ -286,7 +329,7 @@ net_feelies_debug(.year = 2017)
 ```
 
 
-    Top candies by country 
+# Top candies by country 
 
 ```{r}
 net_feelies_debug(.country = "usa")
@@ -294,19 +337,3 @@ net_feelies_debug(.country = "canada")
 net_feelies_debug(.country = "uk")
 net_feelies_debug(.country = "other")
 ```
-
-
-```{r}
-x5 <- 1
-x6 <- 2
-x7 <- 3
-
-
-
-for (i in 5:7){
-  #x <- as.symbol(paste0("x",i))
-  #print(x)
-  x'i'
-}
-```
-
