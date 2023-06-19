@@ -17,8 +17,8 @@ decathlon <- read_rds("data/decathlon.rds")
 names_vector <- row.names(decathlon)
 
 
-remove_rownames(decathlon) %>% 
-mutate(name = names_vector, .before = "100m") -> decathlon_named
+decathlon_named <- remove_rownames(decathlon) %>% 
+mutate(name = names_vector, .before = "100m")
 
 
 ## next we will tidy the names of the columns
